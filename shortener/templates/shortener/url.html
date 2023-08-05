@@ -1,0 +1,12 @@
+
+{%if error%}
+  <p>{{error}}</p>
+{%else%}
+  <p>Ваша ссылка:<a href="{{url.url}}">{{url.url}}</a> - <a href="{{url.short_url}}">{{url.short_url}}</a></p>
+{%endif%}
+<form method="post" hx-post="{% url 'index' %}" hx-target='#target'>
+    {%csrf_token%}
+    {{form}}
+    <input class = 'btn btn-lg btn-secondary fw-bold border-white bg-white' type="submit" value="create">
+  </form>
+

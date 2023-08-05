@@ -1,0 +1,46 @@
+services:
+
+
+  db:
+    image: postgres
+    hostname: db
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    env_file: .env.dev
+
+  redis:
+    image: redis
+    hostname: redis
+    env_file: .env.dev
+    ports:
+      - "6379"
+
+  web:
+    # image: cr.yandex/crpmse562n8qa4i27dh9/shortener:v1
+    build: .
+    entrypoint: ./docker-entrypoint.sh
+    # command: python manage.py migrate && python manage.py runserver 0.0.0.0:8000
+    env_file: .env.dev
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+
+    depends_on:
+      - db
+      - redis
+  
+  huey:
+    build: .
+    # image: cr.yandex/crpmse562n8qa4i27dh9/shortener:v1
+    command: python manage.py run_huey
+    links:
+      - redis:redis
+      - db:postgres
+    volumes:
+      - .:/code
+    env_file: .env.dev
+    depends_on:
+      - web   
+
+
